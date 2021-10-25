@@ -153,7 +153,7 @@ int min_ops(int p[], int i, int j, m_table memo_table) {
     if(j - i < 2) {
         memo_table[i][j].is_set = true;
         memo_table[i][j].num_ops = 0;
-        memo_table[i][j].cut = 0;
+        memo_table[i][j].cut = i;
         return 0;
     }
     
@@ -162,7 +162,7 @@ int min_ops(int p[], int i, int j, m_table memo_table) {
         min_nops = p[i] * p[i+1] * p[j];
         memo_table[i][j].is_set = true;
         memo_table[i][j].num_ops = min_nops;
-        memo_table[i][j].cut = 0;
+        memo_table[i][j].cut = i;
         return min_nops;
     }
     

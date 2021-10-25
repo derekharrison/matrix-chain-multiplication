@@ -51,7 +51,14 @@ int** int2D(int nx, int ny) {
     }
 
     return p;
+}
 
+void free_int2D(int** p, int nx) {
+    for(int i = 0; i < nx; ++i) {
+        delete [] p[i];
+    }
+
+    delete [] p;
 }
 
 void make_par_tree(int i, int j, m_table memo_table, p_elem* par_tree) {
@@ -230,7 +237,6 @@ void matrix_chain_order(int p[], int len_p, int** m, int** s) {
             }
         }
     }
-
 }
 
 void print_optimal_parens(int** s, int i, int j) {
@@ -290,6 +296,8 @@ int main(int argc, const char * argv[]) {
     //Free data
     delete [] p;
     free_memo_table(memo_table, n);
+    free_int2D(m, len + 1);
+    free_int2D(s, len);
 
     std::cout << "done" << std::endl;
 

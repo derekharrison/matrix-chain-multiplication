@@ -241,13 +241,13 @@ void matrix_chain_order(int p[], int len_p, int** m, int** s) {
 
 void print_optimal_parens(int** s, int i, int j) {
     if(i == j) {
-        printf("A%i", i);
+        std::cout << "A" << i;
     }
     else {
-        printf("(");
+        std::cout << "(";
         print_optimal_parens(s, i, s[i][j]);
         print_optimal_parens(s, s[i][j]+1, j);
-        printf(")");
+        std::cout << ")";
     }
 
 }
@@ -271,7 +271,7 @@ int main(int argc, const char * argv[]) {
     int min_num_ops = minimum_num_ops(p, n, memo_table);
 
     //Verify number of operations
-    int min_num_ops_ref = verify_num_ops(n, p, memo_table);
+    int min_num_ops_ver = verify_num_ops(n, p, memo_table);
 
     //Compare with reference results
     int len = n - 1;
@@ -286,7 +286,7 @@ int main(int argc, const char * argv[]) {
     std::cout << std::endl;
 
     std::cout << "min_num_ops: " << min_num_ops << std::endl;
-    std::cout << "min_num_ops_ref: " << min_num_ops_ref << std::endl;
+    std::cout << "min_num_ops_ver: " << min_num_ops_ver << std::endl;
     
     int left_index = 1;
     int right_index = len;

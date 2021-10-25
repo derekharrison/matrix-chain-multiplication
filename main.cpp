@@ -212,46 +212,6 @@ int minimum_num_ops(int p[], int n, m_table memo_table) {
     return min_num_ops;
 }
 
-typedef struct result_element {
-    int** m;
-    int** s;
-} r_elem;
-
-void matrix_chain_order(int p[], int len_p, int** m, int** s) {
-    int n = len_p - 1;
-
-    for(int i = 1; i <= n; ++i) {
-        m[i][i] = 0;
-    }
-
-    for(int l = 2; l <= n; ++l) {
-        for(int i = 1; i <= n - l + 1; ++i) {
-            int j = i + l - 1;
-            m[i][j] = 3e+8;
-            for(int k = i; k <= j - 1; ++k) {
-                int q = m[i][k] + m[k+1][j] + p[i-1]*p[k]*p[j];
-                if(q < m[i][j]) {
-                    m[i][j] = q;
-                    s[i][j] = k;
-                }
-            }
-        }
-    }
-}
-
-void print_optimal_parens(int** s, int i, int j) {
-    if(i == j) {
-        std::cout << "A" << i;
-    }
-    else {
-        std::cout << "(";
-        print_optimal_parens(s, i, s[i][j]);
-        print_optimal_parens(s, s[i][j]+1, j);
-        std::cout << ")";
-    }
-
-}
-
 int main(int argc, const char * argv[]) {
 
     //Input size
@@ -273,31 +233,15 @@ int main(int argc, const char * argv[]) {
     //Verify number of operations
     int min_num_ops_ver = verify_num_ops(n, p, memo_table);
 
-    //Compare with reference results
-    int len = n - 1;
-    int** m = int2D(len + 1, len + 1);
-    int** s = int2D(len, len + 1);
-
-    matrix_chain_order(p, n, m, s);
-
     //Print results
     print_solution(n, memo_table);
-    print_optimal_parens(s, 1, len);
-    std::cout << std::endl;
 
     std::cout << "min_num_ops: " << min_num_ops << std::endl;
     std::cout << "min_num_ops_ver: " << min_num_ops_ver << std::endl;
-    
-    int left_index = 1;
-    int right_index = len;
-
-    std::cout << "m[1][len]: " << m[left_index][right_index] << std::endl;
 
     //Free data
     delete [] p;
     free_memo_table(memo_table, n);
-    free_int2D(m, len + 1);
-    free_int2D(s, len);
 
     std::cout << "done" << std::endl;
 

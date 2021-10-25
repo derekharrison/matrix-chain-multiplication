@@ -7,6 +7,7 @@
 
 #include <cstdlib>
 #include <iostream>
+#include <stdio.h>
 #include <time.h>
 
 const int inf = 3e+8;
@@ -40,6 +41,17 @@ void free_memo_table(m_table r, int n) {
     }
     
     delete [] r;
+}
+
+int** int2D(int nx, int ny) {
+    int** p = new int*[nx];
+
+    for(int i = 0; i < nx; ++i) {
+        p[i] = new int[ny];
+    }
+
+    return p;
+
 }
 
 void make_par_tree(int i, int j, m_table memo_table, p_elem* par_tree) {
@@ -105,6 +117,7 @@ void print_tree(int i, int j, m_table memo_table) {
     
     //Print tree
     std::cout << "printing matrix product solution:" << std::endl;
+    std::cout << "(";
     for(int it = 0; it < n; ++it) {
         int num_l_par_pos = par_tree[it].num_l_par_pos;
         int num_r_par_pre = par_tree[it].num_r_par_pre;
@@ -113,7 +126,7 @@ void print_tree(int i, int j, m_table memo_table) {
         for(int it = 0; it < num_l_par_pos; ++it) { std::cout << "("; }
         if(it < n - 1) { std::cout << "A" << it + 1; }
     }
-    
+    std::cout << ")";
     std::cout << std::endl;
     
     //Free data
@@ -148,19 +161,18 @@ int min_ops(int p[], int i, int j, m_table memo_table) {
     
     //Case more than two matrices being multiplied
     if(j - i > 2) {
-        int min_k = 0;
+        int min_k = i;
         for(int k = i + 1; k < j; ++k) {
             int num_ops1 = min_ops(p, i, k, memo_table);
             int num_ops2 = min_ops(p, k, j, memo_table);
             int tot_num_ops = num_ops1 + num_ops2;
+            tot_num_ops = tot_num_ops + p[i] * p[k] * p[j];
+
             if(tot_num_ops < min_nops) {
                 min_k = k;
                 min_nops = tot_num_ops;
             }
         }
-        
-        //Add operations upper level of parenthesis tree
-        min_nops = min_nops + p[i] * p[min_k] * p[j];
         
         //Set memo table
         memo_table[i][j].is_set = true;
@@ -193,37 +205,93 @@ int minimum_num_ops(int p[], int n, m_table memo_table) {
     return min_num_ops;
 }
 
+typedef struct result_element {
+    int** m;
+    int** s;
+} r_elem;
+
+void matrix_chain_order(int p[], int len_p, int** m, int** s) {
+    int n = len_p - 1;
+
+    for(int i = 1; i <= n; ++i) {
+        m[i][i] = 0;
+    }
+
+    for(int l = 2; l <= n; ++l) {
+        for(int i = 1; i <= n - l + 1; ++i) {
+            int j = i + l - 1;
+            m[i][j] = 3e+8;
+            for(int k = i; k <= j - 1; ++k) {
+                int q = m[i][k] + m[k+1][j] + p[i-1]*p[k]*p[j];
+                if(q < m[i][j]) {
+                    m[i][j] = q;
+                    s[i][j] = k;
+                }
+            }
+        }
+    }
+
+}
+
+void print_optimal_parens(int** s, int i, int j) {
+    if(i == j) {
+        printf("A%i", i);
+    }
+    else {
+        printf("(");
+        print_optimal_parens(s, i, s[i][j]);
+        print_optimal_parens(s, s[i][j]+1, j);
+        printf(")");
+    }
+
+}
+
 int main(int argc, const char * argv[]) {
-    
+
     //Input size
-    int n = 8;
-    
+    int n = 11;
+
     //Allocate space for results
     m_table memo_table = new_memo_table(n, n);
-    
+
     //Creating random sequence of matrix dimensions
     int* p = new int[n];
     srand((unsigned) time(NULL));
     for(int i = 0; i < n; ++i) {
-        p[i] = rand() % n + 1;
+        p[i] = rand() % n + 2;
     }
-    
+
     //Compute minimum number of operations
     int min_num_ops = minimum_num_ops(p, n, memo_table);
 
     //Verify number of operations
     int min_num_ops_ref = verify_num_ops(n, p, memo_table);
-    
+
+    //Compare with reference results
+    int len = n - 1;
+    int** m = int2D(len + 1, len + 1);
+    int** s = int2D(len, len + 1);
+
+    matrix_chain_order(p, n, m, s);
+
     //Print results
     print_solution(n, memo_table);
+    print_optimal_parens(s, 1, len);
+    std::cout << std::endl;
+
     std::cout << "min_num_ops: " << min_num_ops << std::endl;
     std::cout << "min_num_ops_ref: " << min_num_ops_ref << std::endl;
     
+    int left_index = 1;
+    int right_index = len;
+
+    std::cout << "m[1][len]: " << m[left_index][right_index] << std::endl;
+
     //Free data
     delete [] p;
     free_memo_table(memo_table, n);
-    
+
     std::cout << "done" << std::endl;
-    
+
     return 0;
 }

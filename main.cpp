@@ -197,6 +197,17 @@ int minimum_num_ops(int p[], int n, m_table ** table) {
     return min_num_ops;
 }
 
+int * create_rand_seq(int n) {
+    int * p = new int[n];
+
+    srand((unsigned) time(NULL));
+    for(int i = 0; i < n; ++i) {
+        p[i] = rand() % n + 2;
+    }
+
+    return p;
+}
+
 int main(int argc, const char * argv[]) {
 
     //Input size
@@ -206,11 +217,7 @@ int main(int argc, const char * argv[]) {
     m_table ** table = new_memo_table(n, n);
 
     //Creating random sequence of matrix dimensions
-    int * p = new int[n];
-    srand((unsigned) time(NULL));
-    for(int i = 0; i < n; ++i) {
-        p[i] = rand() % n + 2;
-    }
+    int * p = create_rand_seq(n);
 
     //Compute minimum number of operations
     int min_num_ops = minimum_num_ops(p, n, table);
@@ -225,8 +232,8 @@ int main(int argc, const char * argv[]) {
     std::cout << "min_num_ops_ver: " << min_num_ops_ver << std::endl;
 
     //Free data
-    delete [] p;
     free_memo_table(table, n);
+    delete [] p;
 
     return 0;
 }

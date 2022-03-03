@@ -139,7 +139,7 @@ void print_tree(int i, int j, m_table ** table) {
 int min_ops(int p[], int i, int j, m_table ** table) {
     int min_nops = inf;
     
-    //Get value from memo table if possible
+    //Get value from memo table if available
     if(table[i][j].is_set)
         return table[i][j].num_ops;
     
@@ -147,13 +147,13 @@ int min_ops(int p[], int i, int j, m_table ** table) {
     if(j - i < 2)
         return 0;
     
-    //Case pair of matrices
+    //Case product of two matrices
     if(j - i == 2)
         return p[i] * p[i + 1] * p[j];
     
-    //Case more than two matrices being multiplied
+    //Case product of more than two matrices
+    int min_k = i;
     if(j - i > 2) {
-        int min_k = i;
         for(int k = i + 1; k < j; ++k) {
             int num_ops1 = min_ops(p, i, k, table);
             int num_ops2 = min_ops(p, k, j, table);
@@ -165,13 +165,13 @@ int min_ops(int p[], int i, int j, m_table ** table) {
                 min_nops = tot_num_ops;
             }
         }
-        
-        //Set memo table
-        table[i][j].is_set = true;
-        table[i][j].num_ops = min_nops;
-        table[i][j].cut = min_k;
     }
     
+    //Set memo table
+    table[i][j].is_set = true;
+    table[i][j].num_ops = min_nops;
+    table[i][j].cut = min_k;
+
     return min_nops;
 }
 
@@ -207,7 +207,7 @@ int main(int argc, const char * argv[]) {
 
     //Creating random sequence of matrix dimensions
     int * p = new int[n];
-//    srand((unsigned) time(NULL));
+    srand((unsigned) time(NULL));
     for(int i = 0; i < n; ++i) {
         p[i] = rand() % n + 2;
     }

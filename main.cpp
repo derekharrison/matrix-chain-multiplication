@@ -24,7 +24,7 @@ typedef struct parenthesis_element {
 } p_elem;
 
 m_table ** new_memo_table(int n, int m) {
-	m_table ** r = new m_table * [n];
+    m_table ** r = new m_table * [n];
     
     for(int i = 0; i < n; ++i) {
         r[i] = new m_table[m];
@@ -35,7 +35,7 @@ m_table ** new_memo_table(int n, int m) {
 
 void free_memo_table(m_table ** r, int n) {
 
-	for(int i = 0; i < n; ++i)
+    for(int i = 0; i < n; ++i)
         delete [] r[i];
     
     delete [] r;
@@ -186,8 +186,8 @@ int minimum_num_ops(int p[], int n, m_table ** table) {
     //Initialize memo table
     for(int i = 0; i < n; ++i) {
         for(int j = 0; j < n; ++j) {
-        	table[i][j].is_set = false;
-        	table[i][j].num_ops = inf;
+            table[i][j].is_set = false;
+            table[i][j].num_ops = inf;
         }
     }
     
